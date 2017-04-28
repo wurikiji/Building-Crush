@@ -45,7 +45,7 @@ public class AssembleBuilding : MonoBehaviour {
 
 	public void Assemble(int num) {
 		numFloor = num;
-		print ("Assemble " + num + " floors");
+
 		for (int i = 0; i < num; i++) {
 			/* Create floor and set parent to this building */
 			GameObject obj = (GameObject) Instantiate (basicFloor);

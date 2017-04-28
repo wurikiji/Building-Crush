@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework.Internal;
+using BuildingCrush;
 
 public class CrushFloor : MonoBehaviour {
 
 	public int reflectForce;
+	public GameObject controller;
+
+	private PlayerLife playerLife;
 	private int block;
 	// Use this for initialization
 	void Start () {
 		reflectForce = 120;
+		controller = GameObject.Find ("GameController");
+		playerLife = controller.GetComponent<PlayerLife> ();
 	}
 	
 	// Update is called once per frame
@@ -60,11 +66,18 @@ public class CrushFloor : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D col) {
 		Rigidbody2D rb = GetComponentInParent<Rigidbody2D> ();
-		rb.AddForce (new Vector2 (0f, GetForce(rb)));
+		float multiplier = 1.0f;
 		if (col.collider.name == "Player") {
-			CrushAll ();
+			if (PlayerState.Attack == col.collider.GetComponent<MovePlayer> ().GetUserState ()) {
+				CrushAll ();
+				multiplier = 0.5f;
+			}
 		} else if (col.collider.tag == "Floor") {
-			/* Do nothing */
+			return;
+		} else {
+			playerLife.KillPlayer ();
 		}
+		rb.AddForce (new Vector2 (0f, GetForce(rb) * multiplier));
+		print (col.collider.name + col.collider.GetComponent<Rigidbody2D>().simulated);
 	}
 }
